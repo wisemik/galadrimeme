@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <p align="center"><img alt="Logo - RAGapp" src="docs/logo.png"></p>
 
 <p align="center"><strong>The easiest way to use Agentic RAG in any enterprise.</strong></p>
@@ -90,5 +89,3 @@ Questions, feature requests or found a bug? [Open an issue](https://github.com/r
 
 [![Star History Chart](https://api.star-history.com/svg?repos=ragapp/ragapp&type=Date)](https://star-history.com/#ragapp/ragapp&Date)
 =======
-# galadrimeme
->>>>>>> cebd5b0fc671cda3ad7ccae173a996882579337f
