@@ -1,6 +1,6 @@
 <p align="center"><img alt="Logo - RAGapp" src="docs/logo.png"></p>
 
-<p align="center"><strong>The easiest way to use Agentic RAG in any enterprise.</strong></p>
+<p align="center"><strong>The easiest way to treat Meme Coin as a serious stuff.</strong></p>
 
 <p align="center">As simple to configure as <a href="https://openai.com/index/introducing-gpts" target="_blank">OpenAI's custom GPTs</a>, but deployable in your own cloud infrastructure using Docker. Built using <a href="https://github.com/run-llama/llama_index">LlamaIndex</a>.</p>
 
@@ -84,8 +84,3 @@ Then, to check out the admin UI, go to http://localhost:3000/admin.
 ## Contact
 
 Questions, feature requests or found a bug? [Open an issue](https://github.com/ragapp/ragapp/issues/new/choose) or reach out to [marcusschiesser](https://github.com/marcusschiesser).
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=ragapp/ragapp&type=Date)](https://star-history.com/#ragapp/ragapp&Date)
-=======
