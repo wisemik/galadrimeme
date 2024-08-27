@@ -5,6 +5,7 @@
 **/static/
 
 **/*.sqlite
+src/ragapp/config/.env
 
 # deployments
 deployments/**/data/
