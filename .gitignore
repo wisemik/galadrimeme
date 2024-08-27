@@ -1,0 +1,11 @@
+**/__pycache__/
+**/.env
+**/.mypy_cache/
+**/node_modules/
+**/static/
+
+**/*.sqlite
+
+# deployments
+deployments/**/data/
+deployments/**/ollama/

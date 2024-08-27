@@ -1,0 +1,69 @@
+name: Create Release (Docker image and GitHub)
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  release_tagged_image:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - path: ./src/manager
+            image: ragapp/manager
+          - path: ./src/ragapp
+            image: ragapp/ragapp
+
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub Container Registry
+        uses: docker/login-action@v3
+        with:
+          username: marcusschiesser
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Extract tag name
+        id: tag
+        run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.path }}
+          file: ${{ matrix.path }}/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64/v8
+          tags: |
+            ${{ matrix.image }}:${{ steps.tag.outputs.TAG }}
+            ${{ matrix.image }}:latest
+
+  release_github:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v2
+
+      - name: Extract tag name
+        id: tag
+        run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
+
+      - name: Create GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "README.md"
+          name: Release ${{ steps.tag.outputs.TAG }}
+          bodyFile: "CHANGELOG.md"
+          token: ${{ secrets.GITHUB_TOKEN }}

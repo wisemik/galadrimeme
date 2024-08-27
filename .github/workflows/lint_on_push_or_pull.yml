@@ -1,0 +1,100 @@
+name: Lint on push or pull request
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  linting-ts-ragapp-admin-ui:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "src/ragapp/admin-ui"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run lint
+        run: pnpm run lint
+
+      - name: Run Prettier
+        run: pnpm run format
+
+  linting-ts-manager:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "src/manager/frontend"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run lint
+        run: pnpm run lint
+
+      - name: Run Prettier
+        run: pnpm run format
+
+  linting-ragapp:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install ruff
+        shell: bash
+        run: pip install ruff
+
+      - name: Run linter ragapp
+        shell: bash
+        run: ruff check ./src/ragapp
+      
+  linting-manager:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install ruff
+        shell: bash
+        run: pip install ruff
+
+      - name: Run linter manager
+        shell: bash
+        run: ruff check ./src/manager
