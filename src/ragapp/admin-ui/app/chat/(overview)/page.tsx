@@ -26,7 +26,7 @@ export default function Home() {
   const router = useRouter();
   const [showWelcome, setShowWelcome] = useState(false);
   const [configured, setConfigured] = useState<boolean>();
-  console.log(router.asPath)
+
 //  useEffect(() => {
 //    if (router.asPath.split("#")[1] === "new") {
 //      setShowWelcome(true);
@@ -62,7 +62,7 @@ export default function Home() {
     <>
       <div className="flex flex-col max-h-full h-full">
         <div className="w-full shrink-0">
-          <StatusBar configured={configured ?? false} />
+          {/* <StatusBar configured={configured ?? false} /> */}
         </div>
         <div className="w-full flex-1 overflow-auto flex">
           <div

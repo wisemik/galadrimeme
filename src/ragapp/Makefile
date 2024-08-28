@@ -44,7 +44,23 @@ build-admin:
 	mkdir -p ./static/admin && cp -r ./admin-ui/out/* ./static/admin/
 	@echo "\nDone!"
 
+build-chat-no-llama:
+	@echo "\nBuilding Chat UI..."
+	cd ./create_llama/frontend && pnpm install && pnpm run build
+	@echo "\nCopying Chat UI to static folder..."
+	mkdir -p ./static && cp -r ./create_llama/frontend/out/* ./static/
+	@echo "\nDone!"
+
+build-admin-no-llama:
+	@echo "\nBuilding Admin UI..."
+	cd ./admin-ui && pnpm install && pnpm run build
+	@echo "\nCopying Admin UI to static folder..."
+	mkdir -p ./static/admin && cp -r ./admin-ui/out/* ./static/admin/
+	@echo "\nDone!"
+
 build-frontends: build-chat build-admin
+
+build-frontends-no-llama: build-chat-no-llama build-admin-no-llama
 
 install:
 	poetry install
