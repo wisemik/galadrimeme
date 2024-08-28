@@ -1,5 +1,5 @@
-import DashboardSkeleton from '@/components/ui/skeletons';
+import ChatSkeleton from '@/components/ui/skeletons';
 
 export default function Loading() {
-    return <DashboardSkeleton />;
+    return <ChatSkeleton />;
 }
