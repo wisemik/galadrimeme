@@ -21,7 +21,7 @@ session = AiohttpSession()
 bot = Bot(token=os.getenv("TELEGRAM_BOT_TOKEN"))
 dp = Dispatcher()
 BOT_HI_MESSAGE = (
-    "🤖 Welcome to Galadrimeme Bot 📚🎵\n\n"
+    "🤖 Welcome to Galadrimeme Bot 💪😎👌\n\n"
 )
 
 
