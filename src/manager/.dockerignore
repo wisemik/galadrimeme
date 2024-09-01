@@ -1,8 +1,0 @@
-*
-!frontend
-!Makefile
-!app/
-!main.py
-!poetry.lock
-!pyproject.toml
-!entrypoint.sh

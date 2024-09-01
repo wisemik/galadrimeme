@@ -1,0 +1,6 @@
+aiogram~=3.12.0
+openai~=1.43.0
+python-dotenv~=1.0.1
+websockets
+asyncio~=3.4.3
+requests~=2.32.3

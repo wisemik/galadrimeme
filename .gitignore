@@ -1,12 +1,1 @@
-**/__pycache__/
-**/.env
-**/.mypy_cache/
-**/node_modules/
-**/static/
-
-**/*.sqlite
-src/ragapp/config/.env
-
-# deployments
-deployments/**/data/
-deployments/**/ollama/
+.env
