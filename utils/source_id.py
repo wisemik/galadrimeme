@@ -129,3 +129,5 @@ SOURCE_ID = ['abc-news',
 
 CATEGORIES = ['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology']
 LANGUAGES = ['ar', 'de', 'en', 'es', 'fr', 'he', 'it', 'nl', 'no', 'pt', 'ru', 'sv', 'ud', 'zh']
+COUNTRIES = ['ar', 'au', 'br', 'ca', 'de', 'es', 'fr', 'gb', 'ie', 'in', 'is', 'it', 'nl', 'no', 'pk',
+             'ru', 'sa', 'se', 'us', 'za', 'zh']
