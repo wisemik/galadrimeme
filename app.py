@@ -262,6 +262,8 @@ Focus on extracting significant news details directly from the text, with rating
 - **Relevance to Product** (Rate from 0 to 10 based on the alignment with the provided product description)
 - **Hype** (Rate from 0 to 10)
 - **Audience Engagement Potential** (Rate from 0 to 10 based on the likelihood of engaging the described target audience)
+- **Positive** (Rate from 0 to 10 based on how positive or uplifting the news is)
+- **Fun** (Rate from 0 to 10 based on the entertainment or fun factor of the news)
 
 Input:
 
@@ -279,6 +281,11 @@ with the following information for each object (dictionary):
 "Hype Justification": "Why this score was assigned.",
 "Audience Engagement Potential": 0-10,
 "Engagement Justification": "Why this score was assigned."
+"Positive Score": 0-10,
+"Positive Justification": "Why this score was assigned.",
+"Fun Score": 0-10,
+"Fun Justification": "Why this score was assigned."
+"Overall Score": "The arithmetic average of all the above scores."
         """)
         return response.text
     except Exception as e:
@@ -365,9 +372,7 @@ def get_news_files(kind: str = 'news') -> List[dict]:
     content = os.listdir(f"{os.getcwd()}/data")
     if kind != 'all':
         content = [c for c in content if c.startswith(kind+'_')]
-
     files = []
-
     for c in content:
         with open(f'{os.getcwd()}/data/{c}') as f:
             obj = json.load(f)
