@@ -4,6 +4,7 @@ from typing import Any, List
 import os
 import openai
 import logging
+import time
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -244,13 +245,75 @@ def openai_models_list():
     logger.info(client.models.list())
 
 
-def openai_assistant():
-    my_assistant = client.beta.assistants.create(
-        model="gpt-4o",
-        instructions="You are a news ranking chatbot. Use your knowledge base to best respond to the queries.",
-        name="News ranking bot",
-        tools=[{"type": "retrieval"}]
-    )
+def openai_summarize_news(text: str):
+
+    prompt = f"""
+    *1.1 Task Definition*
+       - Analyze the provided text which may contain complex, misordered, or non-standard news data.
+       - Focus particularly on extracting significant news details directly from the text:
+         - Hype. 
+         - Global and important stuff.
+         - Technological breakthrough.
+         - Funny moments.
+         - Politics.
+         - Meme.
+         - Crypto.
+
+       - data: {text}
+
+   *1.2 Focus on User Objective*
+      - Provide the following information (if any) in JSON format:
+      {{
+        "Most relevant news": "Brief description of most relevant news.",
+        "Strategy": "Marketing strategy applicable to my case and based on the hype news.",
+        "Features": "Most relevant and shocking features of the current world news.",
+      }}
+    """
+
+    system_message = """
+        You are acting as a analyst and marketing strategy assistant tasked with extracting key news from the provided news data. 
+        The text may contain raw news and headlines, some embedded within sentences. 
+        Ignore technical details containing in files as json keys. 
+        Your response should be clear and structured, avoiding references to external documents.
+        """
+
+    try:
+        processing_start = time.time()
+        response = client.chat.completions.create(
+            # model="gpt-4o",
+            model="gpt-4o-mini",
+            response_format={"type": "json_object"},
+            messages=[
+                {'role': 'system', 'content': system_message},
+                {'role': 'user', 'content': prompt}
+            ],
+            temperature=0.5,
+            max_tokens=3000,
+            top_p=1.0,
+            frequency_penalty=0.1,
+            presence_penalty=0.2
+        )
+
+        # Correct handling of response using the client library's response objects
+        content = response.choices[0].message.content  # Directly access the content
+        sum_dict = json.loads(content)  # Parse JSON content
+        logger.info(f"Response retreived successfully, passed {round(time.time()-processing_start, 3)} sec.")
+        logger.info("API Call Successful:", sum_dict)
+
+        return sum_dict
+
+    except (KeyError, json.JSONDecodeError) as e:
+        print("Failed to decode JSON:", str(e))
+        return {'error': {"code": "", "text": f"Error: Failed to decode JSON. {e}"}}
+
+    except AttributeError as e:
+        print("Response handling error:", str(e))
+        return {'error': {"code": "", "text": f"Error: Response handling error. {e}"}}
+
+    except Exception as e:
+        print("API Error Here")
+        print({'error': {"code": "", "text": f"Error: Failed to generate summary. {e}"}})
+        return {'error': {"code": "", "text": f"Error: Failed to generate summary. {e}"}}
 
 
 async def main():
