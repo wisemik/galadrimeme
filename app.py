@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, List
+from typing import Any, List, Tuple
 
 import os
 import openai
@@ -7,7 +7,7 @@ import logging
 import time
 
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import OpenAI, AsyncOpenAI
 from datetime import datetime, timedelta
 from tqdm import tqdm
 from newsapi import NewsApiClient
@@ -32,7 +32,7 @@ logging.basicConfig(
 )
 
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 news_client = NewsApiClient(api_key=os.getenv("NEWS_API_KEY"))
 openai.api_key = os.getenv("OPENAI_API_KEY")
 session = AiohttpSession()
@@ -245,8 +245,8 @@ def openai_models_list():
     logger.info(client.models.list())
 
 
-def openai_summarize_news(text: str):
-
+async def openai_summarize_news(text: str) -> dict:
+    logger.info("Sending text and prompt to OpenAI...")
     prompt = f"""
     *1.1 Task Definition*
        - Analyze the provided text which may contain complex, misordered, or non-standard news data.
@@ -267,19 +267,20 @@ def openai_summarize_news(text: str):
         "Most relevant news": "Brief description of most relevant news.",
         "Strategy": "Marketing strategy applicable to my case and based on the hype news.",
         "Features": "Most relevant and shocking features of the current world news.",
+        "Meme": "Come up with a meme concept that captures the biggest news buzz. Give a thought for the target demographic, catchphrase, image, and intriguing title.",
       }}
     """
 
     system_message = """
         You are acting as a analyst and marketing strategy assistant tasked with extracting key news from the provided news data. 
         The text may contain raw news and headlines, some embedded within sentences. 
-        Ignore technical details containing in files as json keys. 
+        Ignore technical details containing in files, for instance, json or dictionary keys. 
         Your response should be clear and structured, avoiding references to external documents.
         """
 
     try:
         processing_start = time.time()
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             # model="gpt-4o",
             model="gpt-4o-mini",
             response_format={"type": "json_object"},
@@ -316,12 +317,40 @@ def openai_summarize_news(text: str):
         return {'error': {"code": "", "text": f"Error: Failed to generate summary. {e}"}}
 
 
+def get_news_files(kind: str = 'news') -> List[dict]:
+    assert kind in ['headlines', 'news', 'all'], \
+        "king argument must take one of the following values: 'headlines', 'news', 'all'"
+
+    content = os.listdir(f"{os.getcwd()}/data")
+    if kind != 'all':
+        content = [c for c in content if c.startswith(kind+'_')]
+
+    files = []
+
+    for c in content:
+        with open(f'{os.getcwd()}/data/{c}') as f:
+            obj = json.load(f)
+
+            if obj:
+                if isinstance(obj, dict):
+                    files.extend(obj['articles'])
+                else:
+                    files.extend(obj)
+
+    return files
+
+
 async def main():
     print("Starting bot polling")
 
     # get_all_headlines(categories=CATEGORIES)
     # get_all_news()
-    await dp.start_polling(bot)
+    files = get_news_files(kind='news')
+    text = ' \n'.join([str(x) for x in files[:50]])  # limit number of instances we are feeding OpenAI
+    response = await openai_summarize_news(text=text)
+    print(response)
+
+    # await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
