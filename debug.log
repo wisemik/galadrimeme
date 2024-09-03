@@ -96,3 +96,11 @@
 2024-09-03 16:50:25,510 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
 2024-09-03 16:50:25,634 [INFO] Response retreived successfully, passed 5.938 sec.
 2024-09-03 16:50:25,635 [INFO] API Call Successful:
+2024-09-03 21:00:48,426 [INFO] Sending text and prompt to OpenAI...
+2024-09-03 21:00:53,591 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-09-03 21:00:53,662 [INFO] Response retreived successfully, passed 5.236 sec.
+2024-09-03 21:00:53,662 [INFO] API Call Successful:
+2024-09-03 21:25:52,527 [INFO] Sending text and prompt to OpenAI...
+2024-09-03 21:25:57,259 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2024-09-03 21:25:57,273 [INFO] Response retreived successfully, passed 4.746 sec.
+2024-09-03 21:25:57,273 [INFO] API Call Successful:

@@ -15,6 +15,8 @@ from newsapi.newsapi_exception import NewsAPIException
 from utils.source_id import SOURCE_ID, CATEGORIES, LANGUAGES, COUNTRIES
 import json
 
+import google.generativeai as genai
+
 from aiogram.types import FSInputFile
 from aiogram import Bot, Dispatcher, types
 from aiogram.client.session.aiohttp import AiohttpSession
@@ -34,6 +36,7 @@ logging.basicConfig(
 load_dotenv()
 client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 news_client = NewsApiClient(api_key=os.getenv("NEWS_API_KEY"))
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 openai.api_key = os.getenv("OPENAI_API_KEY")
 session = AiohttpSession()
 bot = Bot(token=os.getenv("TELEGRAM_BOT_TOKEN"))
@@ -245,6 +248,44 @@ def openai_models_list():
     logger.info(client.models.list())
 
 
+async def news_categorization_gemini(text: str, product_description: str, target_audience_description: str) -> str:
+    try:
+        model = genai.GenerativeModel('gemini-1.5-pro-latest')
+        response = model.generate_content(f"""    
+
+Task Definition:
+
+Analyze the provided text, which may contain complex, disordered, or non-standard news data.
+
+Focus on extracting significant news details directly from the text, with ratings based on the following parameters:
+
+- **Relevance to Product** (Rate from 0 to 10 based on the alignment with the provided product description)
+- **Hype** (Rate from 0 to 10)
+- **Audience Engagement Potential** (Rate from 0 to 10 based on the likelihood of engaging the described target audience)
+
+Input:
+
+- **Product Description**: `{product_description}`
+- **Target Audience Description**: `{target_audience_description}`
+- **News Data**: `{text}`
+
+
+Output the Top 10 most relevant news (array) items in JSON format 
+with the following information for each object (dictionary):
+"News": "Brief description of the news.",
+"Relevance Score": 0-10,
+"Relevance Justification": "Why this score was assigned.",
+"Hype Score": 0-10,
+"Hype Justification": "Why this score was assigned.",
+"Audience Engagement Potential": 0-10,
+"Engagement Justification": "Why this score was assigned."
+        """)
+        return response.text
+    except Exception as e:
+        print(f"Error generating poem: {e}")
+        return "Error "
+
+
 async def openai_summarize_news(text: str) -> dict:
     logger.info("Sending text and prompt to OpenAI...")
     prompt = f"""
@@ -346,8 +387,24 @@ async def main():
     # get_all_headlines(categories=CATEGORIES)
     # get_all_news()
     files = get_news_files(kind='news')
-    text = ' \n'.join([str(x) for x in files[:50]])  # limit number of instances we are feeding OpenAI
-    response = await openai_summarize_news(text=text)
+    text = ' \n'.join([str(x) for x in files])  # limit number of instances we are feeding OpenAI
+    # response = await openai_summarize_news(text=text)
+
+    product_description = ("The EcoCharge Portable Solar Charger is an innovative,"
+                           " eco-friendly device designed for outdoor enthusiasts, "
+                           "travelers, and environmentally conscious consumers. "
+                           "This compact and lightweight charger uses high-efficiency "
+                           "solar panels to provide sustainable energy for smartphones, "
+                           "tablets, and other USB-powered devices. With a built-in power bank,"
+                           " the EcoCharge can store energy for later use, making it perfect for camping trips,"
+                           " hiking adventures, or emergency situations. The product is also water-resistant,"
+                           " durable, and designed to withstand harsh outdoor conditions.")
+    target_audience_description = """Age: 18-45 years old
+Gender: All genders
+Location: Primarily North America and Europe, with a focus on urban and suburban areas
+Income Level: Middle to high income"""
+    response = await news_categorization_gemini(text=text, product_description=product_description,
+                                                target_audience_description=target_audience_description)
     print(response)
 
     # await dp.start_polling(bot)
