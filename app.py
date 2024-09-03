@@ -233,12 +233,32 @@ def get_all_news() -> None:
         get_news_data(keywords=kw, time_delta=15, save=True)
 
 
+def openai_upload_file(name: str):
+    client.files.create(
+        file=open(f"{os.getcwd()}/data/{name}", "rb"),
+        purpose='assistants'
+    )
+
+
+def openai_models_list():
+    logger.info(client.models.list())
+
+
+def openai_assistant():
+    my_assistant = client.beta.assistants.create(
+        model="gpt-4o",
+        instructions="You are a news ranking chatbot. Use your knowledge base to best respond to the queries.",
+        name="News ranking bot",
+        tools=[{"type": "retrieval"}]
+    )
+
+
 async def main():
     print("Starting bot polling")
 
     # get_all_headlines(categories=CATEGORIES)
-    get_all_news()
-    # await dp.start_polling(bot)
+    # get_all_news()
+    await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
