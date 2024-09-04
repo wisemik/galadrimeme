@@ -286,6 +286,7 @@ with the following information for each object (dictionary):
 "Fun Score": 0-10,
 "Fun Justification": "Why this score was assigned."
 "Overall Score": "The arithmetic average of all the above scores."
+"Link": "Link to the full news article."
         """)
         return response.text
     except Exception as e:
@@ -392,21 +393,14 @@ async def main():
     # get_all_headlines(categories=CATEGORIES)
     # get_all_news()
     files = get_news_files(kind='news')
-    text = ' \n'.join([str(x) for x in files])  # limit number of instances we are feeding OpenAI
+    text = ' \n'.join([str(x) for x in files[:50]])  # limit number of instances we are feeding OpenAI
     # response = await openai_summarize_news(text=text)
 
-    product_description = ("The EcoCharge Portable Solar Charger is an innovative,"
-                           " eco-friendly device designed for outdoor enthusiasts, "
-                           "travelers, and environmentally conscious consumers. "
-                           "This compact and lightweight charger uses high-efficiency "
-                           "solar panels to provide sustainable energy for smartphones, "
-                           "tablets, and other USB-powered devices. With a built-in power bank,"
-                           " the EcoCharge can store energy for later use, making it perfect for camping trips,"
-                           " hiking adventures, or emergency situations. The product is also water-resistant,"
-                           " durable, and designed to withstand harsh outdoor conditions.")
-    target_audience_description = """Age: 18-45 years old
+    product_description = """AI HR assistant"""
+    target_audience_description = """Age: 25-45 years old
 Gender: All genders
-Location: Primarily North America and Europe, with a focus on urban and suburban areas
+Role: Corporate professionals, HR managers, and business owners
+Location: Primarily Russia and Europe, with a focus on urban and suburban areas
 Income Level: Middle to high income"""
     response = await news_categorization_gemini(text=text, product_description=product_description,
                                                 target_audience_description=target_audience_description)
