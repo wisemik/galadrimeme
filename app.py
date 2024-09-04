@@ -5,6 +5,7 @@ import os
 import openai
 import logging
 import time
+import subprocess
 
 from dotenv import load_dotenv
 from openai import OpenAI, AsyncOpenAI
@@ -387,13 +388,30 @@ def get_news_files(kind: str = 'news') -> List[dict]:
     return files
 
 
+# Sign Protocol integration
+# The first step to creating a successful schema is understanding exactly what data your application needs.
+# Let's say, for our application, we want to store two things:
+# contractDetails: a string of text, corresponding to what Bob is signing
+# signer: an address, corresponding to Bob's account
+#
+# Note that the attester's address is automatically recorded in any attestation,
+# so we do not need to store this in our schema.
+
+# As the primary concept of Galadrimeme is to rise transparency of Meme coins, our application stores:
+# 1. Meme primary concept
+# - tokenConcept: a string of text,  corresponding to the key underlying idea behind User's issuing token
+# - signer: an address, corresponding to User's account
+# 2.
+
+
 async def main():
     print("Starting bot polling")
 
     # get_all_headlines(categories=CATEGORIES)
-    get_all_news(time_delta=15)
-#     files = get_news_files(kind='news')
-#     text = ' \n'.join([str(x) for x in files[:50]])  # limit number of instances we are feeding OpenAI
+    # get_all_news(time_delta=15)
+    subprocess.check_call('npm --help', shell=True)
+    # files = get_news_files(kind='news')
+    # text = ' \n'.join([str(x) for x in files[:50]])  # limit number of instances we are feeding OpenAI
 #     # response = await openai_summarize_news(text=text)
 #
 #     product_description = """AI HR assistant"""
