@@ -226,7 +226,7 @@ def get_all_headlines(categories: list) -> None:
             get_all_cat_top_headlines(keywords=kw, categories=categories)
 
 
-def get_all_news() -> None:
+def get_all_news(time_delta: int = 1) -> None:
     keywords = [
         'global',
         'politics', 'environment', 'crisis', 'selections', 'ev', 'crypto',
@@ -234,7 +234,7 @@ def get_all_news() -> None:
     ]
     for kw in keywords:
         logger.info(f'Getting and saving data for {kw} keyword...')
-        get_news_data(keywords=kw, time_delta=15, save=True)
+        get_news_data(keywords=kw, time_delta=time_delta, save=True)
 
 
 def openai_upload_file(name: str):
@@ -391,20 +391,20 @@ async def main():
     print("Starting bot polling")
 
     # get_all_headlines(categories=CATEGORIES)
-    # get_all_news()
-    files = get_news_files(kind='news')
-    text = ' \n'.join([str(x) for x in files[:50]])  # limit number of instances we are feeding OpenAI
-    # response = await openai_summarize_news(text=text)
-
-    product_description = """AI HR assistant"""
-    target_audience_description = """Age: 25-45 years old
-Gender: All genders
-Role: Corporate professionals, HR managers, and business owners
-Location: Primarily Russia and Europe, with a focus on urban and suburban areas
-Income Level: Middle to high income"""
-    response = await news_categorization_gemini(text=text, product_description=product_description,
-                                                target_audience_description=target_audience_description)
-    print(response)
+    get_all_news(time_delta=15)
+#     files = get_news_files(kind='news')
+#     text = ' \n'.join([str(x) for x in files[:50]])  # limit number of instances we are feeding OpenAI
+#     # response = await openai_summarize_news(text=text)
+#
+#     product_description = """AI HR assistant"""
+#     target_audience_description = """Age: 25-45 years old
+# Gender: All genders
+# Role: Corporate professionals, HR managers, and business owners
+# Location: Primarily Russia and Europe, with a focus on urban and suburban areas
+# Income Level: Middle to high income"""
+#     response = await news_categorization_gemini(text=text, product_description=product_description,
+#                                                 target_audience_description=target_audience_description)
+#     print(response)
 
     # await dp.start_polling(bot)
 
