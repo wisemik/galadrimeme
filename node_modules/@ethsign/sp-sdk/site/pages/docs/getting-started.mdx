@@ -1,0 +1,167 @@
+import { GettingStarted } from "../../examples/getting-started/demo.tsx";
+
+# Getting Started [Get started in just a few lines of code.]
+
+## Overview
+
+:::warning
+Just a placeholder, content to be added.
+:::
+
+Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat minus temporibus dolorem corrupti odio cum quasi accusantium ratione! Architecto officiis mollitia ducimus? Earum nemo, veritatis a similique ab cupiditate illum?
+
+- Lorem ipsum dolor sit amet consectetur adipisicing elit
+- Repellat minus temporibus dolorem corrupti odio cum quasi accusantium ratione
+- Architecto officiis mollitia ducimus? Earum nemo, veritatis a similique ab cupiditate illum
+
+Repellat minus temporibus dolorem corrupti odio cum quasi accusantium ratione! Architecto officiis mollitia ducimus? Earum nemo, veritatis a similique ab cupiditate illum?
+
+## Instalation
+
+:::code-group
+
+```bash [npm]
+npm i @ethsign/spsdk
+```
+
+```bash [pnpm]
+pnpm i @ethsign/spsdk
+```
+
+:::
+
+## Quick Start
+
+::::steps
+
+### Determine the signing mode
+
+Currently, the Sign Protocol supports 2 modes:
+
+- OnChain:
+- OffChain:
+
+```ts twoslash
+import { SpMode } from "@ethsign/sp-sdk";
+
+// @noErrors
+SpMode. // [!code focus]
+//     ^|
+```
+
+### Setup your client
+
+Firstly, set up your Client with a desired Chain.
+
+```ts twoslash
+import { SignProtocolClient, SpMode, EvmChains } from "@ethsign/sp-sdk";
+import { privateKeyToAccount } from "viem/accounts";
+
+const privateKey = "0xabc"; // [!code focus]
+const account = privateKeyToAccount(privateKey); // [!code focus]
+
+const client = new SignProtocolClient(SpMode.OnChain, { // [!code focus]
+  chain: EvmChains.zetachainAthensTestnet, // [!code focus]
+  account, // [!code focus]
+}); // [!code focus]
+```
+
+### Create Scheme
+
+```ts twoslash
+import { SignProtocolClient, SpMode, EvmChains } from "@ethsign/sp-sdk";
+import { privateKeyToAccount } from "viem/accounts";
+
+const privateKey = "0xabc";
+const account = privateKeyToAccount(privateKey);
+
+const client = new SignProtocolClient(SpMode.OnChain, {
+  chain: EvmChains.zetachainAthensTestnet,
+  account,
+});
+
+// ---cut---
+const schema = client
+  .createSchema({
+    name: "xxx",
+    data: [{ name: "name", type: "string" }],
+  })
+  .then((result) => {
+    console.log(result);
+  });
+```
+
+### Create attestation
+
+```ts twoslash
+import { SignProtocolClient, SpMode, EvmChains } from "@ethsign/sp-sdk";
+import { privateKeyToAccount } from "viem/accounts";
+
+const privateKey = "0xabc";
+const account = privateKeyToAccount(privateKey);
+
+const client = new SignProtocolClient(SpMode.OnChain, {
+  chain: EvmChains.zetachainAthensTestnet,
+  account,
+});
+
+const schema = await client
+  .createSchema({
+    name: "xxx",
+    data: [{ name: "name", type: "string" }],
+  })
+
+const attestation = await client.createAttestation({
+  schemaId: schema.schemaId,
+  data: { name: 'a' },
+  indexingValue: 'xxx',
+})
+```
+
+### Revoke attestation
+
+```ts twoslash
+import { SignProtocolClient, SpMode, EvmChains } from "@ethsign/sp-sdk";
+import { privateKeyToAccount } from "viem/accounts";
+
+const privateKey = "0xabc";
+const account = privateKeyToAccount(privateKey);
+
+const client = new SignProtocolClient(SpMode.OnChain, {
+  chain: EvmChains.zetachainAthensTestnet,
+  account,
+});
+
+const schema = await client
+  .createSchema({
+    name: "xxx",
+    data: [{ name: "name", type: "string" }],
+  })
+
+const attestation = await client.createAttestation({
+  schemaId: schema.schemaId,
+  data: { name: 'a' },
+  indexingValue: 'xxx',
+})
+
+// ---cut---
+client.revokeAttestation(attestation.attestationId)
+```
+
+::::
+
+## Live Example
+
+### OnChain
+
+:::code-group
+
+<div data-title="Preview">
+  <GettingStarted />
+</div>
+
+```ts [demo.tsx]
+// [!include ~/examples/getting-started/demo.tsx]
+```
+
+:::
