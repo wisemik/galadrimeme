@@ -10,6 +10,7 @@ const { privateKeyToAccount } = require("viem/accounts");
 
 const privateKey = process.env.ETH_ACCOUNT_KEY;
 const accountAddress = process.env.ETH_ACCOUNT_ADDRESS;
+const signerAccountAddress = process.env.ETH_ACCOUNT_ADDRESS;
 const tokenDetails = "A coin tending to prove that recycling is a boon."
 const fullSchemaId = "onchain_evm_84532_"
 
@@ -39,7 +40,8 @@ async function createNotaryAttestation(schemaId: string, tokenDetails: string, s
       tokenDetails,
       signer
     },
-    indexingValue: signer.toLowerCase()
+    indexingValue: signer.toLowerCase(),
+    recipients: accountAddress as string,
   });
 
   return res
@@ -159,9 +161,8 @@ function findAttestation(message: string, attestations: any[]) {
 //  const schema = await createSchema();
   const schema = {'schemaId': '0x1c0'};
   console.log('Schema: ', schema);
-  console.log('Done.');
   console.log('Creating attestation...');
-//  const attestation = await createNotaryAttestation(schema['schemaId'], tokenDetails, accountAddress as string);
+//  const attestation = await createNotaryAttestation(schema['schemaId'], tokenDetails, signerAccountAddress as string);
   const attestation = {
                  attestationId: '0x478',
                  txHash: '0xf5e8bdde3bf82b1ae078b50d0b843c0302447f27a0eb94bb2b514a587d35efda',
@@ -169,13 +170,19 @@ function findAttestation(message: string, attestations: any[]) {
                }
 
   console.log('Attestation: ', attestation);
-  console.log('Done.');
   console.log('Querying attestation...');
   const query = await queryAttestations(schema['schemaId'], accountAddress as string, attestation['indexingValue'] as string);
   console.log('Query: ', query);
-  console.log('Done.');
   console.log('Checking whether the attested data is what we are interested in...')
   const valid = findAttestation(tokenDetails, query['attestations'])
   console.log(valid);
   console.log('Done.')
 })();
+
+
+const args = process.argv.slice(2);
+const profileArg = args.find((arg) => arg.startsWith("--arg="));
+const profileName = profileArg ? profileArg.split("=")[1] : "default";
+
+console.log(args[0], args[1]);
+console.log(profileArg, profileName);

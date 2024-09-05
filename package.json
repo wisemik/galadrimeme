@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "ts-node sign_protocol.ts"
+  },
   "dependencies": {
     "@ethsign/sign-protocol-evm": "^1.1.1",
     "@ethsign/sp-sdk": "^0.7.2",
