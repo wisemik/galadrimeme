@@ -41,7 +41,7 @@ async function createNotaryAttestation(schemaId: string, tokenDetails: string, s
       signer
     },
     indexingValue: signer.toLowerCase(),
-    recipients: accountAddress as string,
+//    recipients: accountAddress as string,
   });
 
   return res
@@ -174,8 +174,8 @@ function findAttestation(message: string, attestations: any[]) {
   const query = await queryAttestations(schema['schemaId'], accountAddress as string, attestation['indexingValue'] as string);
   console.log('Query: ', query);
   console.log('Checking whether the attested data is what we are interested in...')
-  const valid = findAttestation(tokenDetails, query['attestations'])
-  console.log(valid);
+//  const valid = findAttestation(tokenDetails, query['attestations'])
+//  console.log(valid);
   console.log('Done.')
 })();
 
@@ -186,3 +186,14 @@ const profileName = profileArg ? profileArg.split("=")[1] : "default";
 
 console.log(args[0], args[1]);
 console.log(profileArg, profileName);
+
+// Ideas for attestation:
+// 1. The claim of a MemeCoin issuer that the character, image, and other related stuff are not tending to harm someone
+//    -- Then we read that statement made by user and attest it
+// 2. A user acts as a attester approving that our service is not responsible for any financial losses caused by
+//    a MemeCoin issuance
+// 3. Our platform acts as a rating system - each individual can attest the core concepts of a Memecoin
+//    The more attestations have been made the more reliable coin is.
+// 4. We attest that person's wallet address is a valid address
+// 5. We attest the date the coin issued, the fact that the person made a request for MemeCoin issuance is not a robot
+// 6. Attest user's experience in blockchain industry (person provides short description, we read it and attest)
