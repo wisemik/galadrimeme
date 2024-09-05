@@ -5,3 +5,7 @@ hackaton_aug_sep_2024.iml
 debug.log
 __pycache__
 utils/*
+artifacts/*
+cache/*
+ignition/*
+node_modules/*
