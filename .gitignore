@@ -8,4 +8,4 @@ utils/*
 artifacts/*
 cache/*
 ignition/*
-node_modules/*
+node_modules/
