@@ -1,5 +1,7 @@
 {
   "scripts": {
+    "create_schema": "ts-node create_schema.ts",
+    "attest_schema": "ts-node attest_schema.ts",
     "start": "ts-node sign_protocol.ts"
   },
   "dependencies": {

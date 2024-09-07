@@ -1,8 +1,8 @@
 Ideas for attestation:
 1. The claim of a MemeCoin issuer that the character, image, and other related stuff are not tending to harm someone
 -- Then we read that statement made by user and attest it
-2. A user acts as a attester approving that our service is not responsible for any financial losses caused by a MemeCoin issuance
-3. Our platform acts as a rating system - each individual can attest the core concepts of a Memecoin. The more attestations have been made the more reliable coin is.
+2. A user acts as an attester approving that our service is not responsible for any financial losses caused by a MemeCoin issuance
+3. Our platform acts as a rating system - each individual can attest the core concepts of a MemeCoin. The more attestations have been made the more reliable coin is.
 4. We attest that person's wallet address is a valid address
 5. We attest the date the coin issued, the fact that the person made a request for MemeCoin issuance is not a robot
 6. Attest user's experience in blockchain industry (person provides short description, we read it and attest)

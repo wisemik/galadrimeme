@@ -282,7 +282,8 @@ def deploy_token(token_name, token_symbol, initial_mint):
 
     try:
         # Execute the command and capture the output
-        result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd="./contract-deploy")
+        result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                cwd="./contract-deploy")
 
         # Get the contract address from stdout
         token_address = result.stdout.decode().strip()
@@ -563,7 +564,7 @@ async def openai_summarize_news(text: str) -> dict:
         # Correct handling of response using the client library's response objects
         content = response.choices[0].message.content  # Directly access the content
         sum_dict = json.loads(content)  # Parse JSON content
-        logger.info(f"Response retreived successfully, passed {round(time.time()-processing_start, 3)} sec.")
+        logger.info(f"Response retreived successfully, passed {round(time.time() - processing_start, 3)} sec.")
         logger.info("API Call Successful:", sum_dict)
 
         return sum_dict
@@ -588,7 +589,7 @@ def get_news_files(kind: str = 'news') -> List[dict]:
 
     content = os.listdir(f"{os.getcwd()}/data")
     if kind != 'all':
-        content = [c for c in content if c.startswith(kind+'_')]
+        content = [c for c in content if c.startswith(kind + '_')]
     files = []
     for c in content:
         with open(f'{os.getcwd()}/data/{c}') as f:
@@ -603,20 +604,104 @@ def get_news_files(kind: str = 'news') -> List[dict]:
     return files
 
 
-# Sign Protocol integration
-# The first step to creating a successful schema is understanding exactly what data your application needs.
-# Let's say, for our application, we want to store two things:
-# contractDetails: a string of text, corresponding to what Bob is signing
-# signer: an address, corresponding to Bob's account
-#
-# Note that the attester's address is automatically recorded in any attestation,
-# so we do not need to store this in our schema.
+def create_schema(name: str,
+                  title: str,
+                  field_1: str = 'tokenDetails',
+                  field_2: str = 'signer', force_rewrite: bool = False) -> dict:
+    """
+    Current implementation suggests two data field attestation where the first one is a statement must be attested
+    and the second is signer address .
 
-# As the primary concept of Galadrimeme is to rise transparency of Meme coins, our application stores:
-# 1. Meme primary concept
-# - tokenConcept: a string of text,  corresponding to the key underlying idea behind User's issuing token
-# - signer: an address, corresponding to User's account
-# 2.
+    Example usage:
+    create_schema(name='test_schema',
+                  title='Test Schema')
+
+    The schema created here: https://testnet-scan.sign.global/schema/onchain_evm_84532_SCHEMA_ID
+
+    :param name: name of a schema, should be reminiscent a key of a dictionary for fast access
+    :param title: title of a schema, the name is displayed on Sign Protocol web page
+    :param field_1: first data field
+    :param field_2: second data field
+    :param force_rewrite: rewrite stored schema anyway
+    :return: dictionary where the key is the schema name and values are schemaId and txHash
+    """
+    schemas = next(os.walk(os.getcwd() + '/attestation/schemas'), (None, None, []))[2]  # [] if no file
+    schemas = [x.replace('.json', '') for x in schemas]
+
+    if name not in schemas or force_rewrite:
+        sp_cmd = [f'npm run --prefix attestation create_schema -- --name="{title}" --arg1={field_1} --arg2={field_2}']
+
+        process = subprocess.Popen(sp_cmd,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   shell=True,
+                                   )
+
+        output, error = process.communicate()
+        error = error.decode("utf-8")
+
+        # Parse response
+        result = {name: {}}
+        if error == '':
+            output = output.decode("utf-8").split("\n")
+            output = [re.sub(r"[-()\"#/@;<>{}`+=~|.!?,]", '', x.strip()) for x in output
+                      if any([k in x for k in ['schemaId', 'txHash']])]
+
+            for el in output:
+                k, v = el.split(':')
+                v = v.strip().replace("'", "")
+
+                result[name][k] = v
+
+        with open(f'{os.getcwd()}/attestation/schemas/{name}.json', 'w') as f:
+            json.dump(result, f)
+
+        return result
+
+    else:
+        return {'error': f'Schema with the specified "{name}" name exists.'}
+
+
+def attest_schema(schema_id: str, data: str, signer: str, attest_by: str) -> dict:
+    """
+    Example usage:
+    attest_schema(schema_id='0x260',
+                  data='We developed a service for MemeCoin generation.',
+                  signer="0x298f9539e484D345CAd143461E4aA3136292a741",
+                  attest_by="0x298f9539e484D345CAd143461E4aA3136292a741")
+
+    :param schema_id:
+    :param data:
+    :param signer:
+    :param attest_by:
+    :return:
+    """
+    sp_cmd = [f'npm run --prefix attestation attest_schema -- --schemaId="{schema_id}" --dataField={data} --signer={signer} --indexingValue={attest_by}']
+    process = subprocess.Popen(sp_cmd,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               shell=True,
+                               )
+
+    output, error = process.communicate()
+    error = error.decode("utf-8")
+
+    # Parse response
+    result = {}
+    if error == '':
+        output = output.decode("utf-8").split("\n")
+        output = [x for x in output if any([k in x for k in ['attestationId', 'txHash', 'indexingValue']])]
+        exclude_id = [i for i, x in enumerate(output) if '>' in x]
+        output = [x for i, x in enumerate(output) if i not in exclude_id]
+        output = [re.sub(r"[-()\"#/@;<>{}`+=~|.!?,]", '', x.strip()) for x in output]
+
+        for el in output:
+            k, v = el.split(':')
+            v = v.strip().replace("'", "")
+
+            result[k] = v
+
+    return result
 
 
 async def main():
@@ -627,14 +712,17 @@ async def main():
     # subprocess.check_call('npm --help', shell=True)
     # files = get_news_files(kind='news')
     # text = ' \n'.join([str(x) for x in files[:50]])  # limit number of instances we are feeding OpenAI
-    # sp_cmd = ['npm run --prefix attestation start -- --arg=myProfile']
-    # process = subprocess.Popen(sp_cmd,
-    #                            stdout=subprocess.PIPE,
-    #                            stderr=subprocess.PIPE,
-    #                            shell=True)
-    # output, error = process.communicate()
-    # print("output: ", output.decode("utf-8"))
-    # print("error: ", error)
+
+    # print(create_schema(name='test_schema',
+    #                     title='Test Schema',
+    #                     force_rewrite=True))
+
+    # print(attest_schema(schema_id='0x260',
+    #                     data='We developed a service for MemeCoin generation.',
+    #                     signer="0x298f9539e484D345CAd143461E4aA3136292a741",
+    #                     attest_by="0x298f9539e484D345CAd143461E4aA3136292a741"))
+
+
 #     # response = await openai_summarize_news(text=text)
 #
 #     product_description = """AI HR assistant"""
