@@ -42,16 +42,16 @@ RPC_URL = os.getenv('RPC_URL')
 PRIVATE_KEY = os.getenv('PRIVATE_KEY')
 CONTRACT_NFT_ADDRESS = os.getenv('CONTRACT_NFT_ADDRESS')
 
-# web3 = Web3(Web3.HTTPProvider(RPC_URL))
-# web3.middleware_onion.inject(geth_poa_middleware, layer=0)
-# if not web3.is_connected():
-#     raise ConnectionError("Unable to connect to Ethereum node")
-#
-# with open('./DalleNft.json', 'r') as file:
-#     contract_abi = json.load(file)
-# account = web3.eth.account.from_key(PRIVATE_KEY)
-#
-# contract = web3.eth.contract(address=CONTRACT_NFT_ADDRESS, abi=contract_abi)
+web3 = Web3(Web3.HTTPProvider(RPC_URL))
+web3.middleware_onion.inject(geth_poa_middleware, layer=0)
+if not web3.is_connected():
+    raise ConnectionError("Unable to connect to Ethereum node")
+
+with open('./DalleNft.json', 'r') as file:
+    contract_abi = json.load(file)
+account = web3.eth.account.from_key(PRIVATE_KEY)
+
+contract = web3.eth.contract(address=CONTRACT_NFT_ADDRESS, abi=contract_abi)
 
 client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 news_client = NewsApiClient(api_key=os.getenv("NEWS_API_KEY"))
@@ -645,7 +645,7 @@ async def main():
 #                                                 target_audience_description=target_audience_description)
 #     print(response)
 
-    # await dp.start_polling(bot)
+    await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
