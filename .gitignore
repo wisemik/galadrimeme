@@ -4,7 +4,6 @@ hackaton_aug_sep_2024.iml
 .idea/*
 debug.log
 __pycache__
-utils/*
 artifacts/*
 cache/*
 ignition/*

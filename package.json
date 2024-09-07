@@ -4,7 +4,7 @@
   },
   "dependencies": {
     "@ethsign/sign-protocol-evm": "^1.1.1",
-    "@ethsign/sp-sdk": "^0.7.2",
+    "@ethsign/sp-sdk": "^0.7.3",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
     "ethereum-cryptography": "^2.2.1"

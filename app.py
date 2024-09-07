@@ -42,16 +42,16 @@ RPC_URL = os.getenv('RPC_URL')
 PRIVATE_KEY = os.getenv('PRIVATE_KEY')
 CONTRACT_NFT_ADDRESS = os.getenv('CONTRACT_NFT_ADDRESS')
 
-web3 = Web3(Web3.HTTPProvider(RPC_URL))
-web3.middleware_onion.inject(geth_poa_middleware, layer=0)
-if not web3.is_connected():
-    raise ConnectionError("Unable to connect to Ethereum node")
-
-with open('./DalleNft.json', 'r') as file:
-    contract_abi = json.load(file)
-account = web3.eth.account.from_key(PRIVATE_KEY)
-
-contract = web3.eth.contract(address=CONTRACT_NFT_ADDRESS, abi=contract_abi)
+# web3 = Web3(Web3.HTTPProvider(RPC_URL))
+# web3.middleware_onion.inject(geth_poa_middleware, layer=0)
+# if not web3.is_connected():
+#     raise ConnectionError("Unable to connect to Ethereum node")
+#
+# with open('./DalleNft.json', 'r') as file:
+#     contract_abi = json.load(file)
+# account = web3.eth.account.from_key(PRIVATE_KEY)
+#
+# contract = web3.eth.contract(address=CONTRACT_NFT_ADDRESS, abi=contract_abi)
 
 client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 news_client = NewsApiClient(api_key=os.getenv("NEWS_API_KEY"))
@@ -625,6 +625,14 @@ async def main():
     # subprocess.check_call('npm --help', shell=True)
     # files = get_news_files(kind='news')
     # text = ' \n'.join([str(x) for x in files[:50]])  # limit number of instances we are feeding OpenAI
+    sp_cmd = ['npm run start -- --arg=myProfile']
+    process = subprocess.Popen(sp_cmd,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               shell=True)
+    output, error = process.communicate()
+    print("output: ", output.decode("utf-8"))
+    print("error: ", error)
 #     # response = await openai_summarize_news(text=text)
 #
 #     product_description = """AI HR assistant"""
@@ -637,7 +645,7 @@ async def main():
 #                                                 target_audience_description=target_audience_description)
 #     print(response)
 
-    await dp.start_polling(bot)
+    # await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
