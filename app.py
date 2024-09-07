@@ -164,6 +164,7 @@ async def send_long_message(message: types.Message, text: str):
         print("Message fits within the limit, sending as is")
         await message.reply(escaped_text, parse_mode="MarkdownV2")
 
+
 def generate_nft(prompt: str):
     tx_hash = send_initialize_mint(prompt)
     logger.info(f"Transaction sent, tx hash: {tx_hash.hex()}")
@@ -209,7 +210,8 @@ def get_contract_response(tokenId):
         except Exception as e:
             print(e)
         time.sleep(2)
-        
+
+
 def transfer_nft(tokenId: int, recipient: str):
     # Ensure tokenId and recipient are valid
 
@@ -231,6 +233,7 @@ def transfer_nft(tokenId: int, recipient: str):
     receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
     logger.info(f"Transfer completed, transaction receipt: {receipt}")
     return tx_hash
+
 
 def update_env_file(key, value):
     # Ensure the value is formatted correctly with quotes
@@ -291,7 +294,6 @@ def deploy_token(token_name, token_symbol, initial_mint):
     except subprocess.CalledProcessError as e:
         print(f"Error during deployment: {e.stderr.decode()}")
         return None
-
 
 
 def get_news_data(keywords: str = '',
