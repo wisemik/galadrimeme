@@ -625,14 +625,14 @@ async def main():
     # subprocess.check_call('npm --help', shell=True)
     # files = get_news_files(kind='news')
     # text = ' \n'.join([str(x) for x in files[:50]])  # limit number of instances we are feeding OpenAI
-    sp_cmd = ['npm run start -- --arg=myProfile']
-    process = subprocess.Popen(sp_cmd,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
-                               shell=True)
-    output, error = process.communicate()
-    print("output: ", output.decode("utf-8"))
-    print("error: ", error)
+    # sp_cmd = ['npm run start -- --arg=myProfile']
+    # process = subprocess.Popen(sp_cmd,
+    #                            stdout=subprocess.PIPE,
+    #                            stderr=subprocess.PIPE,
+    #                            shell=True)
+    # output, error = process.communicate()
+    # print("output: ", output.decode("utf-8"))
+    # print("error: ", error)
 #     # response = await openai_summarize_news(text=text)
 #
 #     product_description = """AI HR assistant"""
