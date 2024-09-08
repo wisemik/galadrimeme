@@ -7,6 +7,8 @@ import logging
 import time
 import subprocess
 import re
+import ast
+import chompjs
 
 from dotenv import load_dotenv
 from openai import OpenAI, AsyncOpenAI
@@ -676,7 +678,7 @@ def attest_schema(schema_id: str, data: str, signer: str, attest_by: str) -> dic
     :param attest_by:
     :return:
     """
-    sp_cmd = [f'npm run --prefix attestation attest_schema -- --schemaId="{schema_id}" --dataField={data} --signer={signer} --indexingValue={attest_by}']
+    sp_cmd = [f'npm run --prefix attestation attest_schema -- --schemaId="{schema_id}" --dataField="{data}" --signer={signer} --indexingValue={attest_by}']
     process = subprocess.Popen(sp_cmd,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE,
@@ -704,6 +706,83 @@ def attest_schema(schema_id: str, data: str, signer: str, attest_by: str) -> dic
     return result
 
 
+def query_attestation(schema_id: str, attester: str, signer: str) -> dict:
+    """
+    Returns attestations if exists, and their corresponding count
+
+    Example usage:
+    query_attestation(schema_id='0x260',
+                      attester="0x298f9539e484D345CAd143461E4aA3136292a741",
+                      signer="0x298f9539e484D345CAd143461E4aA3136292a741")
+
+    :param schema_id:
+    :param attester:
+    :param signer:
+    :return: a dict with a success flag, attestation records, and their count
+
+    """
+    sp_cmd = [f'npm run --prefix attestation query_attestation -- --schemaId="{schema_id}" --attester={attester} --signer={signer}']
+    process = subprocess.Popen(sp_cmd,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               shell=True,
+                               text=True
+                               )
+
+    output, error = process.communicate()
+    if error == '':
+        output = re.sub(r'^> .*\n?', '', output, flags=re.MULTILINE)
+        output = re.sub(r'^$\n', '', output, flags=re.MULTILINE)
+        res = re.sub(r'([a-zA-Z]+)', r'"\1"', output)  # Name -> "Name"
+
+        res = ast.literal_eval(res)
+
+        return res
+
+    else:
+        return {"success": 'false', 'error': f'{error}'}
+
+
+def find_attestation(schema_id: str, attester: str, signer: str, message: str) -> dict:
+    """
+    Example usage:
+    statement = 'I hereby declare that my coin is genuine and has no malicious intent.'
+    attest_schema(schema_id='0x260',
+                  data=statement,
+                  signer="0x..",
+                  attest_by="0x..")
+
+    print(find_attestation(schema_id='0x260',
+                           attester="0x..",
+                           signer="0x..",
+                           message=statement))
+
+    :param schema_id:
+    :param attester:
+    :param signer:
+    :param message:
+    :return:
+    """
+    sp_cmd = [f'npm run --prefix attestation find_attestation -- --schemaId="{schema_id}" --attester={attester} --signer={signer} --message="{message}"']
+    process = subprocess.Popen(sp_cmd,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               shell=True,
+                               text=True
+                               )
+
+    output, error = process.communicate()
+
+    if error == '':
+        output = re.sub(r'^> .*\n?', '', output, flags=re.MULTILINE)
+        output = re.sub(r'^$\n', '', output, flags=re.MULTILINE)
+
+        return chompjs.parse_js_object(output)  # chompjs nicely parses javascript to dict
+
+    else:
+        return {'error': f'{error}'}
+
+
 async def main():
     print("Starting bot polling")
 
@@ -712,16 +791,6 @@ async def main():
     # subprocess.check_call('npm --help', shell=True)
     # files = get_news_files(kind='news')
     # text = ' \n'.join([str(x) for x in files[:50]])  # limit number of instances we are feeding OpenAI
-
-    # print(create_schema(name='test_schema',
-    #                     title='Test Schema',
-    #                     force_rewrite=True))
-
-    # print(attest_schema(schema_id='0x260',
-    #                     data='We developed a service for MemeCoin generation.',
-    #                     signer="0x298f9539e484D345CAd143461E4aA3136292a741",
-    #                     attest_by="0x298f9539e484D345CAd143461E4aA3136292a741"))
-
 
 #     # response = await openai_summarize_news(text=text)
 #

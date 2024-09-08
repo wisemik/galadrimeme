@@ -2,6 +2,8 @@
   "scripts": {
     "create_schema": "ts-node create_schema.ts",
     "attest_schema": "ts-node attest_schema.ts",
+    "query_attestation": "ts-node query_attestation.ts",
+    "find_attestation": "ts-node find_attestation.ts",
     "start": "ts-node sign_protocol.ts"
   },
   "dependencies": {

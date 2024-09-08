@@ -11,8 +11,7 @@ const { privateKeyToAccount } = require("viem/accounts");
 const privateKey = process.env.ETH_ACCOUNT_KEY;
 const accountAddress = process.env.ETH_ACCOUNT_ADDRESS;
 const signerAccountAddress = process.env.ETH_ACCOUNT_ADDRESS;
-const tokenDetails = "A coin tending to prove that recycling is a boon."
-const fullSchemaId = "onchain_evm_84532_"
+const fullSchemaId = "onchain_evm_84532_";
 
 const client = new SignProtocolClient(SpMode.OnChain, {
   chain: EvmChains.baseSepolia,
@@ -20,14 +19,15 @@ const client = new SignProtocolClient(SpMode.OnChain, {
 });
 
 
-async function createNotaryAttestation(schemaId: string, dataField: string, signer: string, indexingValue: string) {
+async function createAttestation(schemaId: string, dataField: string, signer: string, indexingValue: string) {
   const res = await client.createAttestation({
     schemaId: schemaId,
     data: {
       "tokenDetails": dataField,
-      "signer": signer
+      "signer": signer  // Address of a person we are attesting
     },
-    indexingValue: indexingValue.toLowerCase(),
+    attester: indexingValue,  // Attester's address
+    indexingValue: signer.toLowerCase(),  // Address of a person we are attesting
 //    recipients: accountAddress as string,
   });
 
@@ -52,6 +52,6 @@ const indexingValue = indexingValueArg ? indexingValueArg.split("=")[1] : "defau
 
 // create Schema
 (async() => {
-  const attestation = await createNotaryAttestation(schemaId, dataField as string, signer as string, indexingValue as string);
+  const attestation = await createAttestation(schemaId, dataField as string, signer as string, indexingValue as string);
   console.log(attestation);
 })();
