@@ -19,12 +19,12 @@ const client = new SignProtocolClient(SpMode.OnChain, {
 });
 
 
-async function createAttestation(schemaId: string, dataField: string, signer: string, indexingValue: string) {
+async function createAttestation(schemaId: string, arg1: string, arg2: string, dataField: string, signer: string, indexingValue: string) {
   const res = await client.createAttestation({
     schemaId: schemaId,
     data: {
-      "tokenDetails": dataField,
-      "signer": signer  // Address of a person we are attesting
+     [arg1]: dataField,
+     [arg2]: signer  // Address of a person we are attesting
     },
     attester: indexingValue,  // Attester's address
     indexingValue: signer.toLowerCase(),  // Address of a person we are attesting
@@ -40,6 +40,12 @@ const args = process.argv.slice(2);
 const schemIdArg = args.find((arg) => arg.startsWith("--schemaId="));
 const schemaId = schemIdArg ? schemIdArg.split("=")[1] : "default";
 
+const arg1Arg = args.find((arg) => arg.startsWith("--arg1="));
+const arg1 = arg1Arg ? arg1Arg.split("=")[1] : "default";
+
+const arg2Arg = args.find((arg) => arg.startsWith("--arg2="));
+const arg2 = arg2Arg ? arg2Arg.split("=")[1] : "default";
+
 const dataFieldArg = args.find((arg) => arg.startsWith("--dataField="));
 const dataField = dataFieldArg ? dataFieldArg.split("=")[1] : "default";
 
@@ -49,9 +55,8 @@ const signer = signerArg ? signerArg.split("=")[1] : "default";
 const indexingValueArg = args.find((arg) => arg.startsWith("--indexingValue="));
 const indexingValue = indexingValueArg ? indexingValueArg.split("=")[1] : "default";
 
-
 // create Schema
 (async() => {
-  const attestation = await createAttestation(schemaId, dataField as string, signer as string, indexingValue as string);
+  const attestation = await createAttestation(schemaId, arg1, arg2, dataField as string, signer as string, indexingValue as string);
   console.log(attestation);
 })();
