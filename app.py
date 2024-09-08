@@ -42,20 +42,20 @@ logging.basicConfig(
 
 load_dotenv()
 
-# RPC_URL = os.getenv('RPC_URL')
-# PRIVATE_KEY = os.getenv('PRIVATE_KEY')
-# CONTRACT_NFT_ADDRESS = os.getenv('CONTRACT_NFT_ADDRESS')
-#
-# web3 = Web3(Web3.HTTPProvider(RPC_URL))
-# web3.middleware_onion.inject(geth_poa_middleware, layer=0)
-# if not web3.is_connected():
-#     raise ConnectionError("Unable to connect to Ethereum node")
-#
-# with open('./DalleNft.json', 'r') as file:
-#     contract_abi = json.load(file)
-# account = web3.eth.account.from_key(PRIVATE_KEY)
-#
-# contract = web3.eth.contract(address=CONTRACT_NFT_ADDRESS, abi=contract_abi)
+RPC_URL = os.getenv('RPC_URL')
+PRIVATE_KEY = os.getenv('PRIVATE_KEY')
+CONTRACT_NFT_ADDRESS = os.getenv('CONTRACT_NFT_ADDRESS')
+
+web3 = Web3(Web3.HTTPProvider(RPC_URL))
+web3.middleware_onion.inject(geth_poa_middleware, layer=0)
+if not web3.is_connected():
+    raise ConnectionError("Unable to connect to Ethereum node")
+
+with open('./DalleNft.json', 'r') as file:
+    contract_abi = json.load(file)
+account = web3.eth.account.from_key(PRIVATE_KEY)
+
+contract = web3.eth.contract(address=CONTRACT_NFT_ADDRESS, abi=contract_abi)
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 news_client = NewsApiClient(api_key=os.getenv("NEWS_API_KEY"))
@@ -72,17 +72,26 @@ is_authorized_address = False
 main_idea = None
 
 
+# @dp.message(Command("start"))
+# async def command_start(message: types.Message):
+#     print("Received /start command")
+#     global recipient_address  # Declare it global to modify the global variable
+#     match = re.match(r'/start\s+(.+)', message.text)
+#     if match:
+#         recipient_address = match.group(1)
+#         await message.reply("Address for NFTs saved!")
+#     else:
+#         await message.reply("Please provide the text after the command. Example: "
+#                             "/start 0x15eA00EF924F8aD0efCbB852da63Cc34321ca746")
+
 @dp.message(Command("start"))
 async def command_start(message: types.Message):
     print("Received /start command")
-    global recipient_address  # Declare it global to modify the global variable
-    match = re.match(r'/start\s+(.+)', message.text)
-    if match:
-        recipient_address = match.group(1)
-        await message.reply("Address for NFTs saved!")
-    else:
-        await message.reply("Please provide the text after the command. Example: "
-                            "/start 0x15eA00EF924F8aD0efCbB852da63Cc34321ca746")
+    await message.reply("Hello! \nThis is the fantastic and amiable MemeCoin generating service, Galadrimeme 🐱. \n\nHere, "
+                        "you may issue your own coin with a single command in addition to generating a MemeCoin idea "
+                        "concept based on the most recent news and hype! ")
+    await message.reply("Kick off your journey by verifying your account address. Example: "
+                        "/auth 0x...")
 
 
 @dp.message(Command("auth"))
@@ -115,10 +124,10 @@ async def command_authorize(message: types.Message):
         else:
             await message.reply("Address must start with 0x. Please start again.")
             await message.reply("Please provide the text after the command. Example: "
-                                "/auth 0x15eA00EF924F8aD0efCbB852da63Cc34321ca746")
+                                "/auth 0x...")
     else:
         await message.reply("Please provide the text after the command. Example: "
-                            "/auth 0x15eA00EF924F8aD0efCbB852da63Cc34321ca746")
+                            "/auth 0x...")
 
 
 @dp.message(Command("memecoin"))
@@ -197,15 +206,15 @@ async def command_nft(message: types.Message):
     global recipient_address  # Declare it global to modify the global variable
     match = re.match(r'/nft\s+(.+)', message.text)
     if match:
-        # nft_description = match.group(1)
-        nft_description = get_meme_idea_assets()['image']
-        print("nft_description", nft_description)
+        nft_description = match.group(1)
+        # nft_description = get_meme_idea_assets()['image']
+        # print("nft_description", nft_description)
         mess = await message.reply("Generating NFT...")
         contract_url, image_url, token_id = generate_nft(nft_description)
 
-        # transfer_tx_hash = transfer_nft(token_id, recipient_address)
-        # if transfer_tx_hash:
-        #     print(f"NFT transferred successfully: Transaction Hash {transfer_tx_hash.hex()}")
+        transfer_tx_hash = transfer_nft(token_id, recipient_address)
+        if transfer_tx_hash:
+            print(f"NFT transferred successfully: Transaction Hash {transfer_tx_hash.hex()}")
 
         await message.reply_photo(image_url)
         await message.reply(contract_url)
